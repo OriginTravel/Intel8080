@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.1)
+project(VirtualIntel8080 VERSION 0.1.0 LANGUAGES C)
+set(C_STANDARD 99)
+set(C_STANDARD_REQUIRED True)
+add_executable(Intel8080 src/main.c)
