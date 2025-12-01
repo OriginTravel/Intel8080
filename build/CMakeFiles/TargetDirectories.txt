@@ -1,3 +1,0 @@
-/home/george/Рабочий стол/С/VirtualIntel8080/build/CMakeFiles/Intel8080.dir
-/home/george/Рабочий стол/С/VirtualIntel8080/build/CMakeFiles/edit_cache.dir
-/home/george/Рабочий стол/С/VirtualIntel8080/build/CMakeFiles/rebuild_cache.dir

@@ -1,1 +1,0 @@
-/usr/bin/cc -rdynamic CMakeFiles/Intel8080.dir/src/main.c.o -o Intel8080 

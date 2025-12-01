@@ -7,7 +7,9 @@
 Repository: https://github.com/OriginTravel/Intel8080
 
 ***     Compile     ***
-    1. Run 'compile.sh'
+    1. Install C compiler (gcc, clang, msvc)
+    2. Install cmake 
+    3. Run 'compile.sh'
 
 
 About Intel8080 - At its core, the Intel 8080 (datasheet linked) was an eight-bit 
