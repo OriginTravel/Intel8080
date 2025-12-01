@@ -21,7 +21,7 @@
 
 #define PSW(cpu) ((uint16_t)cpu.A<<8 | cpu.flags)
 struct cpu_t{
-    uint8_t* mem;
+    uint8_t* memory;
     uint8_t A;
     union {
         struct {
@@ -66,13 +66,13 @@ struct cpu_t{
 
 
 int main(int argc, char** argv){
-    if (argc == 1){
+    if (argc != 2){
         fputs("Intel8080: Arguments empty! Use -h for help\n", stderr);
         return 1;
     }
     if (*argv[1] == '-'){
         if (argv[1][1] == 'h'){
-
+            puts("Intel8080 Emulator version 0.2!\nAuthor: OriginTravel\nLicense: GNU GPL v3.0\nUsage:\nintel8080 file.bin\nintel8080 file.com\n");
         }
         else{
             fputs("Intel8080: Arguments uncorrect! Use -h for help\n", stderr);
@@ -82,11 +82,11 @@ int main(int argc, char** argv){
     }
     FILE* file = fopen(argv[1], "r");
     if (file == NULL){
-        fputs("Intel8080: open file error\n", stderr);
+        fputs("Intel8080: Open file error\n", stderr);
         return 1;
     }
     if(fseek(file, 0, SEEK_END) == -1){
-        fputs("Intel8080: fseek error!\n", stderr);
+        fputs("Intel8080: Fseek error!\n", stderr);
         fclose(file);
         return 1;
     }
@@ -99,52 +99,52 @@ int main(int argc, char** argv){
     fseek(file, 0, SEEK_SET);
     // Init programm
     struct cpu_t cpu;
-    cpu.mem = (uint8_t*) malloc(UINT16_MAX+1U);
-    if (cpu.mem == NULL){
+    cpu.memory = (uint8_t*) malloc(UINT16_MAX+1U);
+    if (cpu.memory == NULL){
         return 1;
     }
-    fread(cpu.mem, UINT16_MAX+1, 1, file);
+    fread(cpu.memory, UINT16_MAX+1, 1, file);
     fclose(file);
     uint8_t error_code = 0;
 
     // execute machine code
     for (cpu.PC = 0; cpu.PC < size; ++cpu.PC){
-        switch (cpu.mem[cpu.PC]){
+        switch (cpu.memory[cpu.PC]){
 
             // mvi A, Num
             case 0x3E:
                 ++cpu.PC;
-                cpu.A = cpu.mem[cpu.PC];
+                cpu.A = cpu.memory[cpu.PC];
                 break;
             // mvi B, Num
             case 0x06:
                 ++cpu.PC;
-                cpu.B = cpu.mem[cpu.PC];
+                cpu.B = cpu.memory[cpu.PC];
                 break;
             // mvi C, Num
             case 0x0E:
                 ++cpu.PC;
-                cpu.C = cpu.mem[cpu.PC];
+                cpu.C = cpu.memory[cpu.PC];
                 break;
             // mvi D, Num
             case 0x16:
                 ++cpu.PC;
-                cpu.D = cpu.mem[cpu.PC];
+                cpu.D = cpu.memory[cpu.PC];
                 break;
             // mvi E, Num
             case 0x1E:
                 ++cpu.PC;
-                cpu.E = cpu.mem[cpu.PC];
+                cpu.E = cpu.memory[cpu.PC];
                 break;
             // mvi H, Num
             case 0x26:
                 ++cpu.PC;
-                cpu.H = cpu.mem[cpu.PC];
+                cpu.H = cpu.memory[cpu.PC];
                 break;
             // mvi L, Num
             case 0x2E:
                 ++cpu.PC;
-                cpu.B = cpu.mem[cpu.PC];
+                cpu.B = cpu.memory[cpu.PC];
                 break;
 
             // mov B, C
@@ -167,9 +167,9 @@ int main(int argc, char** argv){
             case 0x45:
                 cpu.B = cpu.L;
                 break;
-            // mov B, [Memory value from address(HL)]
+            // mov B, [memory value from address(HL)]
             case 0x46:
-                cpu.B = cpu.mem[cpu.HL];
+                cpu.B = cpu.memory[cpu.HL];
                 break;
             // mov B, A
             case 0x47:
@@ -196,9 +196,9 @@ int main(int argc, char** argv){
             case 0x4D:
                 cpu.C = cpu.L;
                 break;
-            // mov C, [Memory value from address(HL)]
+            // mov C, [memory value from address(HL)]
             case 0x4E:
-                cpu.C = cpu.mem[cpu.HL];
+                cpu.C = cpu.memory[cpu.HL];
                 break;
             // mov C, A
             case 0x4F:
@@ -225,9 +225,9 @@ int main(int argc, char** argv){
             case 0x55:
                 cpu.D = cpu.L;
                 break;
-            // mov D, [Memory value from address(HL)]
+            // mov D, [memory value from address(HL)]
             case 0x56:
-                cpu.D = cpu.mem[cpu.HL];
+                cpu.D = cpu.memory[cpu.HL];
                 break;
             // mov D, A
             case 0x57:
@@ -254,9 +254,9 @@ int main(int argc, char** argv){
             case 0x5D:
                 cpu.E = cpu.L;
                 break;
-            // mov E, [Memory value from address(HL)]
+            // mov E, [memory value from address(HL)]
             case 0x5E:
-                cpu.E = cpu.mem[cpu.HL];
+                cpu.E = cpu.memory[cpu.HL];
                 break;
             // mov E, A
             case 0x5F:
@@ -283,9 +283,9 @@ int main(int argc, char** argv){
             case 0x65:
                 cpu.H = cpu.L;
                 break;
-            // mov H, [Memory value from address(HL)]
+            // mov H, [memory value from address(HL)]
             case 0x66:
-                cpu.H = cpu.mem[cpu.HL];
+                cpu.H = cpu.memory[cpu.HL];
                 break;
             // mov H, A
             case 0x67:
@@ -312,9 +312,9 @@ int main(int argc, char** argv){
             case 0x6C:
                 cpu.L = cpu.H;
                 break;
-            // mov L, [Memory value from address(HL)]
+            // mov L, [memory value from address(HL)]
             case 0x6E:
-                cpu.L = cpu.mem[cpu.HL];
+                cpu.L = cpu.memory[cpu.HL];
                 break;
             // mov L, A
             case 0x6F:
@@ -345,38 +345,38 @@ int main(int argc, char** argv){
             case 0x7D:
                 cpu.A = cpu.L;
                 break;   
-            // mov A, [Memory value from address(HL)]
+            // mov A, [memory value from address(HL)]
             case 0x7E:
-                cpu.A = cpu.mem[cpu.HL];
+                cpu.A = cpu.memory[cpu.HL];
                 break;
 
-            // mov [Memory value from address(HL)], B
+            // mov [memory value from address(HL)], B
             case 0x70:
-                cpu.mem[cpu.HL] = cpu.B;
+                cpu.memory[cpu.HL] = cpu.B;
                 break;
-            // mov [Memory value from address(HL)], C
+            // mov [memory value from address(HL)], C
             case 0x71:
-                cpu.mem[cpu.HL] = cpu.C;
+                cpu.memory[cpu.HL] = cpu.C;
                 break;
-            // mov [Memory value from address(HL)], D
+            // mov [memory value from address(HL)], D
             case 0x72:
-                cpu.mem[cpu.HL] = cpu.D;
+                cpu.memory[cpu.HL] = cpu.D;
                 break;
-            // mov [Memory value from address(HL)], E
+            // mov [memory value from address(HL)], E
             case 0x73:
-                cpu.mem[cpu.HL] = cpu.E;
+                cpu.memory[cpu.HL] = cpu.E;
                 break;
-            // mov [Memory value from address(HL)], H
+            // mov [memory value from address(HL)], H
             case 0x74:
-                cpu.mem[cpu.HL] = cpu.H;
+                cpu.memory[cpu.HL] = cpu.H;
                 break;
-            // mov [Memory value from address(HL)], L
+            // mov [memory value from address(HL)], L
             case 0x75:
-                cpu.mem[cpu.HL] = cpu.L;
+                cpu.memory[cpu.HL] = cpu.L;
                 break;
-            // mov [Memory value from address(HL)], A
+            // mov [memory value from address(HL)], A
             case 0x77:
-                cpu.mem[cpu.HL] = cpu.A;
+                cpu.memory[cpu.HL] = cpu.A;
                 break;
          
 
@@ -384,30 +384,32 @@ int main(int argc, char** argv){
 
 
 
+
+                
       
 
             // lxi BC, Num(16-bit)
             case 0x01:
                 ++cpu.PC;
-                cpu.BC = (uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC];
+                cpu.BC = (uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC];
                 ++cpu.PC;
                 break;
             // lxi DE, Num(16-bit)
             case 0x11:
                 ++cpu.PC;
-                cpu.DE = (uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC];
+                cpu.DE = (uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC];
                 ++cpu.PC;
                 break;
             // lxi HL, Num(16-bit)
             case 0x21:
                 ++cpu.PC;
-                cpu.HL = (uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC];
+                cpu.HL = (uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC];
                 ++cpu.PC;
                 break;
             // lxi SP, Num(16-bit)
             case 0x31:
                 ++cpu.PC;
-                cpu.SP = (uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC];
+                cpu.SP = (uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC];
                 ++cpu.PC;
                 break;
 
@@ -427,34 +429,34 @@ int main(int argc, char** argv){
             // STA Num(16-bit)
             case 0x32:
                 ++cpu.PC;
-                cpu.A = cpu.mem[(uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC]];
+                cpu.A = cpu.memory[(uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC]];
                 ++cpu.PC;
                 break;
             // LDA Num(16-bit)
             case 0x3A:
                 ++cpu.PC;
-                cpu.A = cpu.mem[(uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC]];
+                cpu.A = cpu.memory[(uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC]];
                 ++cpu.PC;
                 break;
             // LHLD Num(16-bit)
             case 0x2A:
                 ++cpu.PC;
-                cpu.L = cpu.mem[(uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC]];
-                cpu.H = cpu.mem[((uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC])+1];
+                cpu.L = cpu.memory[(uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC]];
+                cpu.H = cpu.memory[((uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC])+1];
                 ++cpu.PC;
                 break;
             // SHLD Num(16-bit)
             case 0x22:
                 ++cpu.PC;
-                cpu.mem[(uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC]] = cpu.L;
-                cpu.mem[((uint16_t)cpu.mem[cpu.PC+1]<<8 | cpu.mem[cpu.PC])+1] = cpu.H;
+                cpu.memory[(uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC]] = cpu.L;
+                cpu.memory[((uint16_t)cpu.memory[cpu.PC+1]<<8 | cpu.memory[cpu.PC])+1] = cpu.H;
                 ++cpu.PC;
                 break;
             
 
 
-                
-            // HLT
+
+            // HLT: stop proccessor
             case 0x76U:
                 goto Exit;
                 break;
@@ -466,6 +468,6 @@ int main(int argc, char** argv){
         }
     }
     Exit:
-    free(cpu.mem);
+    free(cpu.memory);
     return 0;
 }
